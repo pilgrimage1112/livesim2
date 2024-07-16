@@ -45,7 +45,7 @@ const (
 type ResponseConfig struct {
 	URLParts                     []string          `json:"-"`
 	URLContentIdx                int               `json:"-"`
-	DynamicChunkMode             int               `json:"-"`
+	DynamicChunkFlag             bool              `json:"-"`
 	BaseURLs                     []string          `json:"BaseURLs,omitempty"`
 	UTCTimingMethods             []UTCTimingMethod `json:"UTCTimingMethods,omitempty"`
 	PeriodDurations              []int             `json:"PeriodDurations,omitempty"`
@@ -215,6 +215,10 @@ cfgLoop:
 			cfg.TimeSubsDurMS = sc.Atoi(key, val)
 		case "timesubsreg": // region (0 or 1)
 			cfg.TimeSubsRegion = sc.Atoi(key, val)
+		case "dyn":
+			cfg.AvailabilityTimeOffsetS = 1.5
+			cfg.AvailabilityTimeCompleteFlag = false
+			cfg.DynamicChunkFlag = true
 		default:
 			contentStartIdx = i
 			break cfgLoop

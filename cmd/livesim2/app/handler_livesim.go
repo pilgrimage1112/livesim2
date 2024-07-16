@@ -141,9 +141,9 @@ func writeSegment(ctx context.Context, w http.ResponseWriter, log *zerolog.Logge
 	if isInitSegment {
 		return nil
 	}
-	if cfg.AvailabilityTimeCompleteFlag {
-		return writeLiveSegment(w, cfg, vodFS, a, segmentPart, nowMS, tt)
+	if !cfg.AvailabilityTimeCompleteFlag && cfg.DynamicChunkFlag {
+		return writeChunkedSegment(ctx, w, log, cfg, vodFS, a, segmentPart, nowMS)
 	}
+	return writeLiveSegment(w, cfg, vodFS, a, segmentPart, nowMS, tt)
 	// Chunked low-latency mode
-	return writeChunkedSegment(ctx, w, log, cfg, vodFS, a, segmentPart, nowMS)
 }
