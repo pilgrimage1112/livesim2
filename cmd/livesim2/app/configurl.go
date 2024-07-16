@@ -45,6 +45,7 @@ const (
 type ResponseConfig struct {
 	URLParts                     []string          `json:"-"`
 	URLContentIdx                int               `json:"-"`
+	DynamicChunkMode             int               `json:"-"`
 	BaseURLs                     []string          `json:"BaseURLs,omitempty"`
 	UTCTimingMethods             []UTCTimingMethod `json:"UTCTimingMethods,omitempty"`
 	PeriodDurations              []int             `json:"PeriodDurations,omitempty"`
