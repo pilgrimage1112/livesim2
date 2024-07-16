@@ -215,7 +215,7 @@ cfgLoop:
 			cfg.TimeSubsDurMS = sc.Atoi(key, val)
 		case "timesubsreg": // region (0 or 1)
 			cfg.TimeSubsRegion = sc.Atoi(key, val)
-		case "dyn":
+		case "dyn": //!!!!!
 			cfg.AvailabilityTimeOffsetS = 1.5
 			cfg.AvailabilityTimeCompleteFlag = false
 			cfg.DynamicChunkFlag = true
