@@ -8,7 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	//"os"
 	"strconv"
+	//"bufio"
+	//"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -27,7 +31,37 @@ type Server struct {
 	assetMgr      *assetMgr
 	textTemplates *ttmpl.Template
 	htmlTemplates *htmpl.Template
+	InitTime      int64
+	//latencyTrace  map[float64]int
 }
+
+// func (s *Server) initLatencyTrace() {
+// 	file, err := os.Open("trace.csv")
+// 	if err != nil {
+// 		fmt.Println("Error opening file:", err)
+// 		return
+// 	}
+// 	defer file.Close()
+
+// 	scanner := bufio.NewScanner(file)
+//     count := 0
+//     for scanner.Scan() {
+// 		if count == 0 {
+//             count++
+//             continue
+//         }
+// 		if count > 33474 {
+// 			break
+// 		}
+//         line := scanner.Text()
+//         parts := strings.Split(line, ",")
+//         since, _ := strconv.ParseFloat(parts[0], 64)
+//         rtt, _ := strconv.ParseFloat(parts[2], 64)
+//         s.latencyTrace[since] = int(rtt)
+//         count++
+//     }
+
+// }
 
 func (s *Server) healthzHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	s.jsonResponse(w, true, http.StatusOK)

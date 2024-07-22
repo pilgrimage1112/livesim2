@@ -23,6 +23,18 @@ import (
 	"github.com/rs/zerolog"
 )
 
+func (s *Server) ifHandoverPeriod() bool {
+	handovermoment := [...]int{12, 27, 42, 57, 72, 87, 102, 117, 132, 147, 162, 177, 192, 207, 222, 237, 252, 267, 282, 297, 312, 327, 342, 357, 373}
+	nowTime := int64(time.Now().UnixMilli())
+	period := (nowTime - s.InitTime) / 1000
+	for i := 0; i < len(handovermoment); i++ {
+		if period > int64(handovermoment[i]-1) && period < int64(handovermoment[i]+1) {
+			return true
+		}
+	}
+	return false
+}
+
 // livesimHandlerFunc handles mpd and segment requests.
 // ?nowMS=... can be used to set the current time for testing.
 func (s *Server) livesimHandlerFunc(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +96,23 @@ func (s *Server) livesimHandlerFunc(w http.ResponseWriter, r *http.Request) {
 		}
 	case ".mp4", ".m4s", ".cmfv", "cmfa", "cmft":
 		segmentPart := strings.TrimPrefix(contentPart, a.AssetPath) // includes heading /
-		err = writeSegment(r.Context(), w, log, cfg, s.assetMgr.vodFS, a, segmentPart[1:], nowMS, s.textTemplates)
+		// nowTime := int64(time.Now().UnixMilli())
+		// if nowTime-s.InitTime > 12000 {
+		// 	cfg.DynamicChunkFlag = false
+		// 	log.Info().Msg("ChunkMode start!")
+		// }
+		dynamicMode := false
+		if cfg.DynamicChunkFlag {
+			if s.ifHandoverPeriod() {
+				dynamicMode = true
+				log.Info().Msg("ChunkMode Turn on !")
+
+			} else {
+				dynamicMode = false
+				log.Info().Msg("ChunkMode Trun off !")
+			}
+		}
+		err = writeSegment(r.Context(), w, log, cfg, s.assetMgr.vodFS, a, segmentPart[1:], nowMS, s.textTemplates, dynamicMode)
 		if err != nil {
 			var tooEarly errTooEarly
 			switch {
@@ -132,7 +160,7 @@ func writeLiveMPD(log *zerolog.Logger, w http.ResponseWriter, cfg *ResponseConfi
 }
 
 func writeSegment(ctx context.Context, w http.ResponseWriter, log *zerolog.Logger, cfg *ResponseConfig, vodFS fs.FS, a *asset,
-	segmentPart string, nowMS int, tt *template.Template) error {
+	segmentPart string, nowMS int, tt *template.Template, dynamicMode bool) error {
 	// First check if init segment and return
 	isInitSegment, err := writeInitSegment(w, cfg, vodFS, a, segmentPart)
 	if err != nil {
@@ -141,7 +169,7 @@ func writeSegment(ctx context.Context, w http.ResponseWriter, log *zerolog.Logge
 	if isInitSegment {
 		return nil
 	}
-	if !cfg.AvailabilityTimeCompleteFlag && cfg.DynamicChunkFlag { //!!!!!
+	if !cfg.AvailabilityTimeCompleteFlag && dynamicMode { //!!!!!
 		return writeChunkedSegment(ctx, w, log, cfg, vodFS, a, segmentPart, nowMS)
 	}
 	return writeLiveSegment(w, cfg, vodFS, a, segmentPart, nowMS, tt)

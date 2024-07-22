@@ -65,6 +65,8 @@ func SetupServer(ctx context.Context, cfg *ServerConfig) (*Server, error) {
 		logger:     logger,
 		Cfg:        cfg,
 		assetMgr:   newAssetMgr(vodFS),
+		InitTime:   int64(time.Now().UnixMilli()),
+		//latencyTrace: make(map[float64]int),
 	}
 
 	err = server.compileTemplates()

@@ -30,6 +30,7 @@ const (
 	timeShiftBufferDepthMarginS     = 10
 	defaultTimeSubsDurMS            = 900
 	defaultLatencyTargetMS          = 3500
+	defaultDynamicFlag              = false
 )
 
 type ServerConfig struct {

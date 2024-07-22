@@ -176,7 +176,7 @@ func writeLiveSegment(w http.ResponseWriter, cfg *ResponseConfig, vodFS fs.FS, a
 	if isTimeSubsMedia {
 		return err
 	}
-	data, mimeType, err := adjustLiveSegment(vodFS, a, cfg, segmentPart, nowMS)
+	data, mimeType, err := adjustLiveSegment(vodFS, a, cfg, segmentPart, nowMS) //把vod转换为live
 	if err != nil {
 		return fmt.Errorf("convertToLive: %w", err)
 	}

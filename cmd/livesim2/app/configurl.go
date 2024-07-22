@@ -92,6 +92,7 @@ func NewResponseConfig() *ResponseConfig {
 		TimeShiftBufferDepthS:        Ptr(defaultTimeShiftBufferDepthS),
 		StartNr:                      Ptr(defaultStartNr),
 		TimeSubsDurMS:                defaultTimeSubsDurMS,
+		DynamicChunkFlag:             defaultDynamicFlag,
 	}
 	return &c
 }
